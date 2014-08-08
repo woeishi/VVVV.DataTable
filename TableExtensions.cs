@@ -87,7 +87,7 @@ namespace VVVV.Nodes.Table
 		public static void Set<T>(this Table table, T input, int rowIndex, int columnIndex)
 		{
 			rowIndex = VVVV.Utils.VMath.VMath.Zmod(rowIndex, table.Rows.Count);
-			columnIndex = VVVV.Utils.VMath.VMath.Zmod(rowIndex, table.Columns.Count);
+			columnIndex = VVVV.Utils.VMath.VMath.Zmod(columnIndex, table.Columns.Count);
 			table.Rows[rowIndex][columnIndex] = input;
 			table.OnDataChange(null);
 		}
