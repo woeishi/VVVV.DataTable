@@ -1,4 +1,4 @@
-﻿#region usings
+#region usings
 using System;
 using System.Data;
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ namespace VVVV.Nodes.Table
 						Action<ISpread<Table>,Table.DataChangedHandler> create = delegate(ISpread<Table> tables,Table.DataChangedHandler eventHandler)
 						{
 							Table t = new Table();
-							t.InitTable(FTableName[i], tables.SliceCount);
+							t.TableName = FTableName[i];
 							tables.Add(t);
 							
 							t.SetupColumns(FColumnNames[i],FColumnTypes[i]);
@@ -130,7 +130,12 @@ namespace VVVV.Nodes.Table
 		{
 			if (sender != this)
 			{
-				FFreshData[e.Table.SliceIndex] = true;
+				int id = -1;
+				for (int i=0; i<FTables.SliceCount; i++)
+					if (FTables[i].TableName == e.Table.TableName)
+						id = i;
+				if (id>=0)
+					FFreshData[id] = true;
 			}
 		}
 		
@@ -211,16 +216,11 @@ namespace VVVV.Nodes.Table
 					FOutStatus.SliceCount = 0;
 					for (int i=0; i<ds.Tables.Count; i++)
 					{
-						System.IO.MemoryStream s = new System.IO.MemoryStream();
-						ds.Tables[i].WriteXml(s,XmlWriteMode.WriteSchema, false);
 						Table t = new Table();
-						s.Position= 0;
-						t.ReadXml(s);
-						t.InitTable(i);
+						t.Merge(ds.Tables[i]);
 						FTables.Add(t);
 						t.DataChanged += new Table.DataChangedHandler(FTable_DataChanged);
-						s.Dispose();
-						FOutStatus.Add(t.NiceName+" loaded OK");
+						FOutStatus.Add(t.TableName.ToString()+" loaded OK");
 					}
 					return true;
 				}
@@ -248,19 +248,15 @@ namespace VVVV.Nodes.Table
 					System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(FFilename));
 					
 					DataSet ds = new DataSet();
-					ds.DataSetName =System.IO.Path.GetFileNameWithoutExtension(FFilename);
+					ds.DataSetName = System.IO.Path.GetFileNameWithoutExtension(FFilename);
 					for (int i=0; i<FTables.SliceCount; i++)
 					{
-						System.IO.MemoryStream s = new System.IO.MemoryStream();
-						FTables[i].WriteXml(s,XmlWriteMode.WriteSchema, false);
-						s.Position= 0;
-						ds.Tables.Add(FTables[i].TableName);
-						ds.Tables[FTables[i].TableName].ReadXml(s);
-						s.Dispose();
+						ds.Tables.Add(FTables[i].Copy());
 					}
 					ds.WriteXml(FFilename, XmlWriteMode.WriteSchema);
 					for (int i=0; i<FOutStatus.SliceCount; i++)
 						FOutStatus[i] = FFilename+" saved OK";
+					ds.Dispose();
 					return true;
 				}
 				catch (Exception e)

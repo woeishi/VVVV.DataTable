@@ -53,79 +53,33 @@ namespace VVVV.Nodes.Table
 		}
 		#endregion
 
-		#region ctor & fields
-		private bool isChanging; //seemingly some parallelism going on
-		public Table()
-		{
-			isChanging = false;
-			ClearAll();
-		}
-		public int SliceIndex { get; set; }
-		public string NiceName { get; set; }
-		public string ColumnNames
-		{
-			get 
-			{
-				string ret = string.Empty;
-				foreach (DataColumn c in this.Columns)
-					ret += c.ColumnName + ",";
-				
-				if (ret.Length > 1)
-					ret = ret.Substring(0,ret.Length-1);
-				
-				return ret;
-			}
-		}
-		#endregion
 		
 		#region structure methods
-		public void InitTable(string name, int slice)
-		{
-			this.SliceIndex = slice;
-			this.NiceName = name;
-			this.TableName = NiceName+"_"+slice.ToString();
-		}
-		
-		public void InitTable(int slice)
-		{
-			this.SliceIndex = slice;
-			this.NiceName = this.TableName.Replace("_"+slice.ToString(),"");
-		}
-
-		public bool CompareTableName(string name, int i)
-		{
-			return this.TableName == name+"_"+i.ToString();
-		}
-
 		public void SetupColumns(string columnNames, string columnTypes = "d")
 		{
-			if (!isChanging)
-			{
-				isChanging = true;
-				if (columnNames == "")
-					return;
-				
-				string[] colNameArray;
-				if (string.IsNullOrEmpty(columnNames))
-					colNameArray = new string[]{};
-				else
-					colNameArray = columnNames.Split(',');			
-				string[] colTypeArray;
-				if (string.IsNullOrEmpty(columnTypes))
-					colTypeArray = new string[]{};
-				else
-					colTypeArray = columnTypes.Split(',');
-				
-				int count = colNameArray.Length;
-				
-				for (int a=0; a<count; a++)
-					this.AddOrSetColumn(colNameArray[a], colTypeArray[a%colTypeArray.Length], a);
-				
-				for (int r=this.Columns.Count-1; r>=count; r--) //first remove avoiding too many duplicates
-					this.Columns.RemoveAt(r);
-				isChanging = false;
-				OnStructureChange(null);
-			}
+			if (columnNames == "")
+				return;
+			
+			string[] colNameArray;
+			if (string.IsNullOrEmpty(columnNames))
+				colNameArray = new string[]{};
+			else
+				colNameArray = columnNames.Split(new char[]{',',' '},StringSplitOptions.RemoveEmptyEntries);
+			string[] colTypeArray;
+			if (string.IsNullOrEmpty(columnTypes))
+				colTypeArray = new string[]{};
+			else
+				colTypeArray = columnTypes.Split(',');
+			
+			int count = colNameArray.Length;
+			
+			for (int a=0; a<count; a++)
+				this.AddOrSetColumn(colNameArray[a], colTypeArray[a%colTypeArray.Length], a);
+			
+			for (int r=this.Columns.Count-1; r>=count; r--) //first remove avoiding too many duplicates
+				this.Columns.RemoveAt(r);
+			
+			OnStructureChange(this);
 		}
 		
 		public void AddOrSetColumn(string name, string typeString, int ord)
@@ -202,16 +156,7 @@ namespace VVVV.Nodes.Table
 //					testRow[newCol] = newCol.DefaultValue;
 //			}
 			newCol.AllowDBNull = false;
-			
-			
 		}
 		#endregion
-
-		public void ClearAll()
-		{
-			this.Rows.Clear();
-			this.Columns.Clear();
-			OnDataChange(this);
-		}
 	}
 }

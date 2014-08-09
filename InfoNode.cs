@@ -39,8 +39,14 @@ namespace VVVV.Nodes.Table
 					}
 					else
 					{
-						FName[i] = tables[i].NiceName;
-						FColumnNames[i] = tables[i].ColumnNames;
+						FName[i] = tables[i].TableName;
+						
+						string colNames = string.Empty;
+						foreach (System.Data.DataColumn c in tables[i].Columns)
+							colNames+=c.ColumnName+",";
+						colNames = colNames.TrimEnd(new char[]{','});
+						FColumnNames[i] = colNames;
+						
 						FRowCount[i] = tables[i].Rows.Count;
 					}
 				}

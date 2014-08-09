@@ -216,7 +216,7 @@ namespace VVVV.Nodes.Table
 
 				if (FData != null)
 				{
-					FDataGridView.TopLeftHeaderCell.Value = FData.NiceName;
+					FDataGridView.TopLeftHeaderCell.Value = FData.TableName;
 					FDataGridView.AllowUserToAddRows = FAllowAddRow[0];
 					foreach(DataGridViewColumn column in FDataGridView.Columns)
 					{
