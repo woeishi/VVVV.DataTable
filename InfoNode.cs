@@ -17,6 +17,9 @@ namespace VVVV.Nodes.Table
 		[Output("Column Names")]
 		ISpread<string> FColumnNames;
 		
+		[Output("Column Types")]
+		ISpread<string> FColumnTypes;
+		
 		[Output("Row Count")]
 		ISpread<int> FRowCount;
 		#endregion
@@ -28,6 +31,7 @@ namespace VVVV.Nodes.Table
 				int spreadMax = tables.SliceCount;
 				FName.SliceCount = spreadMax;
 				FColumnNames.SliceCount = spreadMax;
+				FColumnTypes.SliceCount = spreadMax;
 				FRowCount.SliceCount = spreadMax;
 				for (int i=0; i<spreadMax; i++)
 				{
@@ -42,10 +46,16 @@ namespace VVVV.Nodes.Table
 						FName[i] = tables[i].TableName;
 						
 						string colNames = string.Empty;
+						string colTypes = string.Empty;
 						foreach (System.Data.DataColumn c in tables[i].Columns)
+						{
 							colNames+=c.ColumnName+",";
+							colTypes+=c.DataType.Name.ToLower()[0]+",";
+						}
 						colNames = colNames.TrimEnd(new char[]{','});
+						colTypes = colTypes.TrimEnd(new char[]{','});
 						FColumnNames[i] = colNames;
+						FColumnTypes[i] = colTypes;
 						
 						FRowCount[i] = tables[i].Rows.Count;
 					}
