@@ -30,8 +30,11 @@ namespace VVVV.Nodes.Table
 		
 		private void ReleaseTable(Table t)
 		{
-			t.DataChanged -= new Table.DataChangedHandler(Tables_Changed);
-			IsChanged = true;
+			if (t!=null)
+			{
+				t.DataChanged -= new Table.DataChangedHandler(Tables_Changed);
+				IsChanged = true;
+			}
 		}
 		
 		public void Evaluate(int SpreadMax)
@@ -61,8 +64,8 @@ namespace VVVV.Nodes.Table
 				}
 				this.FData_Connected();
 			}
-
-			this.EvaluateTables(FTables, IsChanged);
+			if (FTables.SliceCount > 0)
+				this.EvaluateTables(FTables, IsChanged);
 			this.IsChanged = false;
 		}
 

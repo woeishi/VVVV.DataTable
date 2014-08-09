@@ -19,7 +19,7 @@ namespace VVVV.Nodes.Table
 		IDiffSpread<string> FType;
 		
 		[Input("Table", Order = int.MinValue, IsSingle = true)]
-		private IDiffSpread<Table> FPinInTable;
+		private IDiffSpread<Table> FTables;
 		
 		[Import()]
 		private IIOFactory FIOFactory;
@@ -52,7 +52,10 @@ namespace VVVV.Nodes.Table
 				firstFrame = false;
 			}
 			
-			if (FPinInTable[0] == null)
+			if (FTables.SliceCount == 0)
+				return;
+			
+			if (FTables[0] == null)
 			{
 				if (FTable != null)
 				{
@@ -63,14 +66,14 @@ namespace VVVV.Nodes.Table
 					FTable = null;
 				}
 			}
-			else if (FTable != FPinInTable[0])
+			else if (FTable != FTables[0])
 			{
 				if (FTable != null)
 				{
 					FTable.DataChanged -= Tables_Changed;
 					FTable.StructureChanged -= Column_Changed;
 				}
-				FTable = FPinInTable[0];
+				FTable = FTables[0];
 				FTable.DataChanged += Tables_Changed;
 				FTable.StructureChanged += Column_Changed;
 				IsChanged = true;

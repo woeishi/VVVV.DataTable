@@ -202,11 +202,18 @@ namespace VVVV.Nodes.Table
 
 		public void Evaluate(int SpreadMax)
 		{
+			if (FPinInTable.SliceCount == 0)
+			{
+				FData = null;
+				FDataGridView.DataSource = null;
+				return;
+			}
+			
 			if (FPinInTable[FTableIndex[0]] != FData)
 			{
 				FData = FPinInTable[FTableIndex[0]];
 				FDataGridView.DataSource = FData;
-				
+
 				if (FData != null)
 				{
 					FDataGridView.TopLeftHeaderCell.Value = FData.NiceName;
