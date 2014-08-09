@@ -53,18 +53,15 @@ namespace VVVV.Nodes.Table
 		}
 		#endregion
 
-		
 		#region structure methods
 		public void SetupColumns(string columnNames, string columnTypes = "d")
 		{
-			if (columnNames == "")
-				return;
-			
 			string[] colNameArray;
 			if (string.IsNullOrEmpty(columnNames))
 				colNameArray = new string[]{};
 			else
 				colNameArray = columnNames.Split(new char[]{',',' '},StringSplitOptions.RemoveEmptyEntries);
+			
 			string[] colTypeArray;
 			if (string.IsNullOrEmpty(columnTypes))
 				colTypeArray = new string[]{};
@@ -72,12 +69,12 @@ namespace VVVV.Nodes.Table
 				colTypeArray = columnTypes.Split(',');
 			
 			int count = colNameArray.Length;
+			for (int r=this.Columns.Count-1; r>=count; r--) //first remove avoiding too many duplicates
+				this.Columns.RemoveAt(r);
 			
 			for (int a=0; a<count; a++)
 				this.AddOrSetColumn(colNameArray[a], colTypeArray[a%colTypeArray.Length], a);
 			
-			for (int r=this.Columns.Count-1; r>=count; r--) //first remove avoiding too many duplicates
-				this.Columns.RemoveAt(r);
 			
 			OnStructureChange(this);
 		}
