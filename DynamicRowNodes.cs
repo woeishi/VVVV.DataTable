@@ -21,6 +21,9 @@ namespace VVVV.Nodes.Table
 		[Input("Table", Order = int.MinValue, IsSingle = true)]
 		private IDiffSpread<Table> FTables;
 		
+		[Output("Status", Order = int.MaxValue, Visibility = PinVisibility.Hidden)]
+		private ISpread<string> FStatus;
+		
 		[Import()]
 		private IIOFactory FIOFactory;
 		
@@ -39,8 +42,6 @@ namespace VVVV.Nodes.Table
         {
 			FName.Changed += InitialCreatePins;
 			FType.Changed += InitialCreatePins;
-//			FName.Changed += delegate { this.CreatePins(); };
-//			FType.Changed += delegate { this.CreatePins(); };
         }
 
 		public void Evaluate(int SpreadMax)
@@ -92,12 +93,19 @@ namespace VVVV.Nodes.Table
 						FName.Add(col.ColumnName);
 						FType.Add(col.DataType.ToString());
 					}
-					this.CreatePins(); //seems like events cause pin creation in the next frame
 				}
-				else
-					this.CreatePins();
+				this.CreatePins(); //seems like events cause pin creation in the next frame
 			}
-			this.EvaluateTable(FTable, FPins, IsChanged);
+			
+			try
+			{
+				this.EvaluateTable(FTable, FPins, IsChanged);
+				FStatus[0] = string.Empty;
+			}
+			catch (Exception e) 
+			{ 
+				FStatus[0] = e.Message; 
+			}
 			
 			this.IsChanged = false;
 			this.ColChanged = false;
@@ -181,7 +189,8 @@ namespace VVVV.Nodes.Table
 				
 				if (table != null && table.Columns.Count > 0)
 				{
-					
+					foreach (var p in pins.Values)
+            			(p.RawIOObject as ISpread).SliceCount = table.Rows.Count;
 					for (int i=0; i<FIndex.SliceCount; i++)
 					{
 						if (table.Rows.Count > 0)
@@ -196,18 +205,7 @@ namespace VVVV.Nodes.Table
 								string key = _n+_t;
 								try
 								{
-									switch (_t)
-									{
-										case "System.Double":
-											(pins[key].RawIOObject as ISpread<double>).Add((double)table.Rows[id][c]);
-											break;
-										case "System.String":
-											(pins[key].RawIOObject as ISpread<string>).Add((string)table.Rows[id][c]);
-											break;
-										default:
-											(pins[key].RawIOObject as ISpread<object>).Add(table.Rows[id][c]);
-											break;
-									}
+									(pins[key].RawIOObject as ISpread)[i] = table.Rows[id][c];
 								}
 								catch (Exception e)
 								{
@@ -262,18 +260,7 @@ namespace VVVV.Nodes.Table
 							string _n = table.Columns[c].ColumnName;
 							string _t = table.Columns[c].DataType.ToString();
 							string key = _n+_t;
-							switch (_t)
-							{
-								case "System.Double":
-									table.Set((pins[key].RawIOObject as ISpread<double>)[i],id,c);
-									break;
-								case "System.String":
-									table.Set((pins[key].RawIOObject as ISpread<string>)[i],id,c);
-									break;
-								default:
-									table.Set((pins[key].RawIOObject as ISpread<object>)[i],id,c);
-									break;
-							}
+							table.Set((pins[key].RawIOObject as ISpread)[i],id,c);
 						}
 					}
 				}
@@ -321,18 +308,7 @@ namespace VVVV.Nodes.Table
 							string _n = table.Columns[c].ColumnName;
 							string _t = table.Columns[c].DataType.ToString();
 							string key = _n+_t;
-							switch (_t)
-							{
-								case "System.Double":
-									row[c] = (pins[key].RawIOObject as ISpread<double>)[i];
-									break;
-								case "System.String":
-									row[c] = (pins[key].RawIOObject as ISpread<string>)[i];
-									break;
-								default:
-									row[c] = (pins[key].RawIOObject as ISpread<object>)[i];
-									break;
-							}
+							row[c] = (pins[key].RawIOObject as ISpread)[i];
 						}
 
 						int index = FIndex[i];
