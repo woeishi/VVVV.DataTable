@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 
 namespace VVVV.Nodes.Table
@@ -35,6 +35,21 @@ namespace VVVV.Nodes.Table
 		public void OnDataChange(Object sender)
 		{
 			OnDataChange(sender, new TableEventArgs(this));
+		}
+		
+		
+		public delegate void StructureChangedHandler(Object sender, TableEventArgs e);
+		public event StructureChangedHandler StructureChanged;
+		
+		void OnStructureChange(object sender, TableEventArgs e)
+		{
+			if (DataChanged != null)
+				StructureChanged(sender, e);
+		}
+
+		public void OnStructureChange(Object sender)
+		{
+			OnStructureChange(sender, new TableEventArgs(this));
 		}
 		#endregion
 
@@ -109,6 +124,7 @@ namespace VVVV.Nodes.Table
 				for (int r=this.Columns.Count-1; r>=count; r--) //first remove avoiding too many duplicates
 					this.Columns.RemoveAt(r);
 				isChanging = false;
+				OnStructureChange(null);
 			}
 		}
 		
@@ -160,7 +176,7 @@ namespace VVVV.Nodes.Table
 					}
 					catch
 					{
-						
+						type = typeof(double);
 					}
 					break;
 			}
@@ -172,20 +188,21 @@ namespace VVVV.Nodes.Table
 		{
 			DataColumn newCol = this.Columns.Add(name, type);
 			
-			if (ord >= 0 && ord <= this.Columns.Count)
-				newCol.SetOrdinal(ord);
-			
 			if (type == typeof(string))
 				newCol.DefaultValue = TableDefaults.STRING;
 			else
 				newCol.DefaultValue = TableDefaults.DOUBLE;
-
-			foreach (DataRow testRow in Rows)
-			{
-				if (testRow[newCol].GetType() == typeof(DBNull))
-					testRow[newCol] = newCol.DefaultValue;
-			}
+			
+			if (ord >= 0 && ord <= this.Columns.Count)
+				newCol.SetOrdinal(ord);
+			
+//			foreach (DataRow testRow in Rows)
+//			{
+//				if (testRow[newCol].GetType() == typeof(DBNull))
+//					testRow[newCol] = newCol.DefaultValue;
+//			}
 			newCol.AllowDBNull = false;
+			
 			
 		}
 		#endregion
