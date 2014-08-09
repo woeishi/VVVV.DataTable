@@ -10,6 +10,9 @@ namespace VVVV.Nodes.Table
 		#region fields & pins
 		[Input("Table", Order = int.MinValue)]
 		private IDiffSpread<Table> FPinInTable;
+		
+		[Output("Status", Order = int.MaxValue, Visibility = PinVisibility.Hidden)]
+		private ISpread<string> FStatus;
 
 		private Spread<Table> FTables = new Spread<Table>(0);
 		private bool IsChanged = false; //flag is raised when DataChanged event is called
@@ -65,7 +68,17 @@ namespace VVVV.Nodes.Table
 				this.FData_Connected();
 			}
 			if (FTables.SliceCount > 0)
-				this.EvaluateTables(FTables, IsChanged);
+			{
+				try 
+				{ 
+					this.EvaluateTables(FTables, IsChanged); 
+					FStatus[0] = string.Empty;
+				}
+				catch (Exception e) 
+				{ 
+					FStatus[0] = e.Message; 
+				}
+			}
 			this.IsChanged = false;
 		}
 
