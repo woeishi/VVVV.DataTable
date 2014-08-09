@@ -105,7 +105,8 @@ namespace VVVV.Nodes.Table
 			
 			if (FPinInLoad[0] || (FFirstRun && FPinInAutoSave[0]))
 				Load();
-			
+
+			FFreshData.ResizeAndDismiss(FTables.SliceCount, () => true);
 			FOutStatus.SliceCount = FTables.SliceCount;
 			FHasChanged.SliceCount = FTables.SliceCount;
 			for (int i=0; i<FTables.SliceCount; i++)
@@ -160,6 +161,7 @@ namespace VVVV.Nodes.Table
 					{
 						Table t = new Table();
 						t.Merge(ds.Tables[i]);
+						t.TableName = ds.Tables[i].TableName;
 						FTables.Add(t);
 						t.DataChanged += new Table.DataChangedHandler(FTable_DataChanged);
 						FOutStatus.Add(t.TableName.ToString()+" loaded OK");
