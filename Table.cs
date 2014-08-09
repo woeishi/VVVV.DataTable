@@ -120,6 +120,11 @@ namespace VVVV.Nodes.Table
 				case "value":
 					type = typeof(double);
 					break;
+				case "i":
+				case "int":
+				case "integer":
+					type = typeof(int);
+					break;
 				default:
 					try
 					{
