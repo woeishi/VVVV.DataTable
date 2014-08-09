@@ -1,6 +1,7 @@
 ﻿#region usings
 using System;
 using System.Data;
+using System.Collections.Generic;
 
 using System.ComponentModel.Composition;
 using VVVV.PluginInterfaces.V2;
@@ -10,19 +11,82 @@ using VVVV.Core.Logging;
 
 namespace VVVV.Nodes.Table
 {
-
+	internal class TableCommands
+	{
+		public List<Action<ISpread<Table>,Table.DataChangedHandler>> cmds;
+		public TableCommands()
+		{
+			this.cmds = new List<Action<ISpread<Table>,Table.DataChangedHandler>>();
+		}
+	}
+	
+	#region PluginInfo
+	[PluginInfo(Name = "CreateTable", Category = TableDefaults.CATEGORY, Help = "Create an instance of a Table to be used elsewhere", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
+	#endregion PluginInfo
+	public class CreateTableNode : IPluginEvaluate
+	{
+		#region fields & pins
+		[Input("Commands In", IsSingle = true)]
+		ISpread<TableCommands> FIn;
+		
+		[Input("Table Name", DefaultString="MyTable")]
+		ISpread<string> FTableName;
+		
+		[Input("Column Names", DefaultString="x,y,z")]
+		ISpread<string> FColumnNames;
+		
+		[Input("Column Types", DefaultString="d,d,d")]
+		ISpread<string> FColumnTypes;
+		
+//		[Input("Index")] 
+//		ISpread<int> FIndex;
+		
+		[Input("Insert", IsBang = true)]
+		IDiffSpread<bool> FInsert;
+		
+		[Output("Commands Out")]
+		ISpread<TableCommands> FOut;
+		
+		[Import()]
+		ILogger FLogger;
+		#endregion
+		
+		public void Evaluate(int spreadMax)
+		{
+			FOut[0] = FIn[0];
+			if (FInsert.IsChanged)
+			{
+				for (int i=0; i<spreadMax; i++)
+				{
+					if (FInsert[i])
+					{
+						Action<ISpread<Table>,Table.DataChangedHandler> create = delegate(ISpread<Table> tables,Table.DataChangedHandler eventHandler)
+						{
+							Table t = new Table();
+							t.InitTable(FTableName[i], tables.SliceCount);
+							tables.Add(t);
+							
+							t.SetupColumns(FColumnNames[i],FColumnTypes[i]);
+							t.DataChanged += eventHandler;
+						};
+						if (FOut[0] == null)
+							FOut[0] = new TableCommands();
+						FOut[0].cmds.Add(create);
+					}
+				}
+			}
+		}
+	}
+	
 	#region PluginInfo
 	[PluginInfo(Name = "Table", Category = TableDefaults.CATEGORY, Help = "Create an instance of a Table to be used elsewhere", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
 	#endregion PluginInfo
-	public class TableManagerNode : IPluginEvaluate
+	public class TableManagerNode : IPluginEvaluate, IPartImportsSatisfiedNotification
 	{
 		#region fields & pins
-		[Input("Table Name", DefaultString="MyTable")]
-		IDiffSpread<string> FTableName;
+		[Input("Commands In", IsSingle = true)]
+		ISpread<TableCommands> FCmds;
 		
-		[Input("Column Names", DefaultString="x,y,z")]
-		IDiffSpread<string> FPinInColumnNames;
-
 		[Input("Clear", IsBang = true)]
 		ISpread<bool> FPinInClear;
 		
@@ -39,7 +103,7 @@ namespace VVVV.Nodes.Table
 		IDiffSpread<string> FPinInFilename;
 
 		[Output("Table")]
-		ISpread<Table> FPinOutTable;
+		ISpread<Table> FTables;
 		
 		[Output("Has Changed")]
 		ISpread<bool> FHasChanged;
@@ -50,8 +114,6 @@ namespace VVVV.Nodes.Table
 		[Import()]
 		ILogger FLogger;
 
-		DataSet FDataSet = new DataSet();
-		Spread<Table> FTables = new Spread<Table>(0);
 		Spread<bool> FFreshData = new Spread<bool>(0);
 		
 		bool AnyChanged = false;
@@ -59,89 +121,53 @@ namespace VVVV.Nodes.Table
 		string FFilename = "spreadtable.xml";
 		#endregion fields & pins
 		
+		public void OnImportsSatisfied()
+        {
+			FTables.SliceCount = 0;
+		}
+		
 		void FTable_DataChanged(Object sender, TableEventArgs e)
 		{
 			if (sender != this)
 			{
 				FFreshData[e.Table.SliceIndex] = true;
-				e.Table.SetupColumns(FPinInColumnNames[e.Table.SliceIndex]);
 			}
 		}
 		
-		private Table CreateTable(int slice)
-		{
-			Table t = new Table();
-			t.InitTable(FTableName[slice], slice);
-			
-			FDataSet.Tables.Add(t);
-			t.DataChanged += new Table.DataChangedHandler(FTable_DataChanged);
-			return t;
-		}
-		
-		private void RemoveTable(Table t)
-		{
-			t.DataChanged -= new Table.DataChangedHandler(FTable_DataChanged);
-			FDataSet.Tables.RemoveAt(t.SliceIndex);
-			t.Dispose();
-		}
-
 		
 		//called when data for any output pin is requested
 		public void Evaluate(int spreadMax)
 		{
+			if (FCmds.SliceCount == 1)
+			{
+				if (FCmds[0] != null)
+				{
+					foreach (var a in FCmds[0].cmds)
+					{
+						a(FTables,FTable_DataChanged);
+					}
+				}
+			}
+			
 			if (FPinInFilename.IsChanged)
 				FFilename = FPinInFilename[0];
 			
 			if (FPinInLoad[0] || (FFirstRun && FPinInAutoSave[0]))
 				Load();
 			
-			if ((!FTableName.IsChanged) && (!FPinInColumnNames.IsChanged))
-				spreadMax = FDataSet.Tables.Count;
 			
-			FFreshData.ResizeAndDismiss(spreadMax, () => true);
-			FTables.Resize(spreadMax, CreateTable, (t) => RemoveTable(t));
+			FFreshData.ResizeAndDismiss(FTables.SliceCount, () => true);
 			
-			FOutStatus.SliceCount = spreadMax;
-			FHasChanged.SliceCount = spreadMax;
-			FPinOutTable.SliceCount = spreadMax;
-			
-			for (int i=0; i<spreadMax; i++)
+			FOutStatus.SliceCount = FTables.SliceCount;
+			FHasChanged.SliceCount = FTables.SliceCount;
+			for (int i=0; i<FTables.SliceCount; i++)
 			{
 				if (FHasChanged[i])
 					FHasChanged[i]=false;
 				
-				//set table name
-				if (FTableName.IsChanged)
-				{
-					if (!FTables[i].CompareTableName(FTableName[i],i))
-					{
-						FTables[i].InitTable(FTableName[i], i);
-						FFreshData[i] = true;
-					}
-				}
-				
-				//set column names;
-				if (FPinInColumnNames.IsChanged)
-				{
-					if (FTables[i].ColumnNames != FPinInColumnNames[i])
-					{
-						try
-						{
-							FTables[i].SetupColumns(FPinInColumnNames[i]);
-							FFreshData[i] = true;
-							FOutStatus[i] = "OK";
-						}
-						catch(Exception e)
-						{
-							FOutStatus[i] = e.Message;
-						}
-					}
-				}
-				
 				if (FPinInClear[i])
 				{
-					FTables[i].ClearAll();
-					FTables[i].SetupColumns(FPinInColumnNames[i]);
+					FTables[i].Rows.Clear();
 					FFreshData[i] = true;
 				}
 				
@@ -152,7 +178,6 @@ namespace VVVV.Nodes.Table
 				{
 					FTables[i].OnDataChange(this);
 					FFreshData[i] = false;
-					FPinOutTable[i] = FTables[i];
 					FHasChanged[i] = true;
 					AnyChanged = true;
 				}
@@ -177,21 +202,17 @@ namespace VVVV.Nodes.Table
 			{
 				try
 				{
-					for (int r=FTables.SliceCount-1; r>=0; r--)
-					{
-						FTables[r].Dispose();
-						FTables.RemoveAt(r);
-					}
-					FDataSet.Dispose();
-					FDataSet = new DataSet();
-					FDataSet.DataSetName = System.IO.Path.GetFileNameWithoutExtension(FFilename);
-					FDataSet.ReadXml(FFilename);
-					FDataSet.AcceptChanges();
+					FTables.ResizeAndDispose(0, () => new Table());
+					
+					DataSet ds = new DataSet();
+					ds.DataSetName = System.IO.Path.GetFileNameWithoutExtension(FFilename);
+					ds.ReadXml(FFilename);
+					ds.AcceptChanges();
 					FOutStatus.SliceCount = 0;
-					for (int i=0; i<FDataSet.Tables.Count; i++)
+					for (int i=0; i<ds.Tables.Count; i++)
 					{
 						System.IO.MemoryStream s = new System.IO.MemoryStream();
-						FDataSet.Tables[i].WriteXml(s,XmlWriteMode.WriteSchema, false);
+						ds.Tables[i].WriteXml(s,XmlWriteMode.WriteSchema, false);
 						Table t = new Table();
 						s.Position= 0;
 						t.ReadXml(s);
@@ -225,16 +246,19 @@ namespace VVVV.Nodes.Table
 				try
 				{
 					System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(FFilename));
+					
+					DataSet ds = new DataSet();
+					ds.DataSetName =System.IO.Path.GetFileNameWithoutExtension(FFilename);
 					for (int i=0; i<FTables.SliceCount; i++)
 					{
 						System.IO.MemoryStream s = new System.IO.MemoryStream();
 						FTables[i].WriteXml(s,XmlWriteMode.WriteSchema, false);
 						s.Position= 0;
-						FDataSet.Tables[i].Clear();
-						FDataSet.Tables[i].ReadXml(s);
+						ds.Tables.Add(FTables[i].TableName);
+						ds.Tables[FTables[i].TableName].ReadXml(s);
 						s.Dispose();
 					}
-					FDataSet.WriteXml(FFilename, XmlWriteMode.WriteSchema);
+					ds.WriteXml(FFilename, XmlWriteMode.WriteSchema);
 					for (int i=0; i<FOutStatus.SliceCount; i++)
 						FOutStatus[i] = FFilename+" saved OK";
 					return true;
