@@ -11,80 +11,13 @@ using VVVV.Core.Logging;
 
 namespace VVVV.Nodes.Table
 {
-	internal class TableCommands
-	{
-		public List<Action<ISpread<Table>,Table.DataChangedHandler>> cmds;
-		public TableCommands()
-		{
-			this.cmds = new List<Action<ISpread<Table>,Table.DataChangedHandler>>();
-		}
-	}
-	
-	#region PluginInfo
-	[PluginInfo(Name = "CreateTable", Category = TableDefaults.CATEGORY, Help = "Create an instance of a Table to be used elsewhere", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
-	#endregion PluginInfo
-	public class CreateTableNode : IPluginEvaluate
-	{
-		#region fields & pins
-		[Input("Commands In", IsSingle = true)]
-		ISpread<TableCommands> FIn;
-		
-		[Input("Table Name", DefaultString="MyTable")]
-		ISpread<string> FTableName;
-		
-		[Input("Column Names", DefaultString="x,y,z")]
-		ISpread<string> FColumnNames;
-		
-		[Input("Column Types", DefaultString="d,d,d")]
-		ISpread<string> FColumnTypes;
-		
-//		[Input("Index")] 
-//		ISpread<int> FIndex;
-		
-		[Input("Insert", IsBang = true)]
-		IDiffSpread<bool> FInsert;
-		
-		[Output("Commands Out")]
-		ISpread<TableCommands> FOut;
-		
-		[Import()]
-		ILogger FLogger;
-		#endregion
-		
-		public void Evaluate(int spreadMax)
-		{
-			FOut[0] = FIn[0];
-			if (FInsert.IsChanged)
-			{
-				for (int i=0; i<spreadMax; i++)
-				{
-					if (FInsert[i])
-					{
-						Action<ISpread<Table>,Table.DataChangedHandler> create = delegate(ISpread<Table> tables,Table.DataChangedHandler eventHandler)
-						{
-							Table t = new Table();
-							t.TableName = FTableName[i];
-							tables.Add(t);
-							
-							t.SetupColumns(FColumnNames[i],FColumnTypes[i]);
-							t.DataChanged += eventHandler;
-						};
-						if (FOut[0] == null)
-							FOut[0] = new TableCommands();
-						FOut[0].cmds.Add(create);
-					}
-				}
-			}
-		}
-	}
-	
 	#region PluginInfo
 	[PluginInfo(Name = "Table", Category = TableDefaults.CATEGORY, Help = "Create an instance of a Table to be used elsewhere", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
 	#endregion PluginInfo
 	public class TableManagerNode : IPluginEvaluate, IPartImportsSatisfiedNotification
 	{
 		#region fields & pins
-		[Input("Commands In", IsSingle = true)]
+		[Input("Commands", IsSingle = true)]
 		ISpread<TableCommands> FCmds;
 		
 		[Input("Clear", IsBang = true)]
@@ -147,9 +80,22 @@ namespace VVVV.Nodes.Table
 			{
 				if (FCmds[0] != null)
 				{
-					foreach (var a in FCmds[0].cmds)
+					foreach (var f in FCmds[0].cmds)
 					{
-						a(FTables,FTable_DataChanged);
+						int index = 0;
+						try
+						{
+							index = f(FTables,FTable_DataChanged);
+							FFreshData.ResizeAndDismiss(FTables.SliceCount, () => true);
+							FFreshData[index] = true;
+						}
+						catch (Exception e)
+						{
+							var s = e.Message.Split('|');
+							if (s.Length > 1)
+								int.TryParse(s[1],out index);
+							FOutStatus[index] = s[0];
+						}
 					}
 				}
 			}
@@ -159,9 +105,6 @@ namespace VVVV.Nodes.Table
 			
 			if (FPinInLoad[0] || (FFirstRun && FPinInAutoSave[0]))
 				Load();
-			
-			
-			FFreshData.ResizeAndDismiss(FTables.SliceCount, () => true);
 			
 			FOutStatus.SliceCount = FTables.SliceCount;
 			FHasChanged.SliceCount = FTables.SliceCount;
@@ -212,7 +155,6 @@ namespace VVVV.Nodes.Table
 					DataSet ds = new DataSet();
 					ds.DataSetName = System.IO.Path.GetFileNameWithoutExtension(FFilename);
 					ds.ReadXml(FFilename);
-					ds.AcceptChanges();
 					FOutStatus.SliceCount = 0;
 					for (int i=0; i<ds.Tables.Count; i++)
 					{
@@ -254,8 +196,10 @@ namespace VVVV.Nodes.Table
 						ds.Tables.Add(FTables[i].Copy());
 					}
 					ds.WriteXml(FFilename, XmlWriteMode.WriteSchema);
+					
 					for (int i=0; i<FOutStatus.SliceCount; i++)
 						FOutStatus[i] = FFilename+" saved OK";
+					
 					ds.Dispose();
 					return true;
 				}

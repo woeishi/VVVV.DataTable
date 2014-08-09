@@ -48,8 +48,9 @@
     <Reference Include="VVVV.Utils" />
   </ItemGroup>
   <ItemGroup>
-  	<Compile Include="DynamicRowNodes.cs" />
+    <Compile Include="DynamicRowNodes.cs" />
     <Compile Include="GetNodes.cs" />
+    <Compile Include="TableCommandNodes.cs" />
     <Compile Include="TablePluginEvaluate.cs" />
     <Compile Include="InfoNode.cs" />
     <Compile Include="InsertNodes.cs" />
