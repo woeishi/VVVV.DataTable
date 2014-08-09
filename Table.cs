@@ -66,7 +66,7 @@ namespace VVVV.Nodes.Table
 			if (string.IsNullOrEmpty(columnTypes))
 				colTypeArray = new string[]{};
 			else
-				colTypeArray = columnTypes.Split(',');
+				colTypeArray = columnTypes.Split(new char[]{',',' '},StringSplitOptions.RemoveEmptyEntries);
 			
 			int count = colNameArray.Length;
 			for (int r=this.Columns.Count-1; r>=count; r--) //first remove avoiding too many duplicates
