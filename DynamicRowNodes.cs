@@ -268,7 +268,7 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "Dynamic", Help = "Inserts values of a table row", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "Dynamic", Help = "Inserts values into a new table row", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class InsertRowDynamicNode : TableRowDynamicPluginEvaluate
 	{
 		#region fields & pins
