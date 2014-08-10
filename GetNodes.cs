@@ -50,8 +50,11 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	[PluginInfo(Name = "Dump", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Convert Tables to Values", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "Dump", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of all tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
 	public class DumpValueNode : DumpNode<double> {}
+	
+	[PluginInfo(Name = "Dump", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of all tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
+	public class DumpStringNode : DumpNode<string> {}
 	#endregion DumpNodes
 	
 	#region GetTableNodes
@@ -97,8 +100,11 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	[PluginInfo(Name = "GetTable", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Convert Table to Values", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "GetTable", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of an entire table", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
 	public class GetTableValueNode : GetTableNode<double> {}
+	
+	[PluginInfo(Name = "GetTable", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of an entire table", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
+	public class GetTableStringNode : GetTableNode<string> {}
 	#endregion GetTableNodes
 	
 	#region GetRowNodes
@@ -132,8 +138,11 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	[PluginInfo(Name = "GetRow", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of a table row", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "GetRow", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of a table row", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
 	public class GetRowValueNode : GetRowNode<double> {}
+	
+	[PluginInfo(Name = "GetRow", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of a table row", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
+	public class GetRowStringNode : GetRowNode<string> {}
 	#endregion GetRowNodes
 	
 	#region GetColumnNodes
@@ -167,8 +176,11 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	[PluginInfo(Name = "GetColumn", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of a table column", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "GetColumn", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of a table column", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
 	public class GetColumnValueNode : GetColumnNode<double> {}
+	
+	[PluginInfo(Name = "GetColumn", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of a table column", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
+	public class GetColumnStringNode : GetColumnNode<string> {}
 	#endregion GetColumnNodes
 	
 	#region GetCellNodes
@@ -210,7 +222,10 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	[PluginInfo(Name = "GetCell", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets the value of a table cell", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "GetCell", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets the value of a table cell", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
 	public class GetCellValueNode : GetCellNode<double> {}
+	
+	[PluginInfo(Name = "GetCell", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets the string of a table cell", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
+	public class GetCellStringNode : GetCellNode<string> {}
 	#endregion GetCellNodes
 }

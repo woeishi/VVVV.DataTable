@@ -36,9 +36,10 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	#region PluginInfo
-	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Insert values into Tables (akin to Queue)", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
-	#endregion PluginInfo
+	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Insert rows of values into tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class InsertRowValueNode : InsertRowNode<double> {}
+	
+	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "String", Help = "Insert rows of strings into tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
+	public class InsertRowStringNode : InsertRowNode<string> {}
 	#endregion InsertRowNodes
 }

@@ -38,8 +38,10 @@ namespace VVVV.Nodes.Table
 	
 	[PluginInfo(Name = "SetRow", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Row-wise sets values in tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class SetRowValueNode : SetRowNode<double> {}
-	#endregion SetRowNodes
 	
+	[PluginInfo(Name = "SetRow", Category = TableDefaults.CATEGORY, Version = "String", Help = "Row-wise sets strings in tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
+	public class SetRowStringNode : SetRowNode<string> {}
+	#endregion SetRowNodes
 	
 	#region SetColumnNodes
 	public class SetColumnNode<T> : TablePluginEvaluate
@@ -74,6 +76,9 @@ namespace VVVV.Nodes.Table
 	
 	[PluginInfo(Name = "SetColumn", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Column-wise sets values in tables", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class SetColumnValueNode : SetColumnNode<double> {}
+	
+	[PluginInfo(Name = "SetColumn", Category = TableDefaults.CATEGORY, Version = "String", Help = "Column-wise sets strings in tables", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
+	public class SetColumnStringNode : SetColumnNode<string> {}
 	#endregion SetColumnNodes
 	
 	#region SetCellNodes
@@ -112,5 +117,8 @@ namespace VVVV.Nodes.Table
 	
 	[PluginInfo(Name = "SetCell", Category = TableDefaults.CATEGORY, Version="Value", Help = "Sets values cell-wise in tables", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class SetCellValueNode : SetCellNode<double> {}
+	
+	[PluginInfo(Name = "SetCell", Category = TableDefaults.CATEGORY, Version="String", Help = "Sets strings cell-wise in tables", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
+	public class SetCellStringNode : SetCellNode<string> {}
 	#endregion SetCellNodes
 }
