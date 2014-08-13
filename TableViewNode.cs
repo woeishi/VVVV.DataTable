@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -39,6 +40,7 @@ namespace VVVV.Nodes.Table
 		
 		[Import()]
 		ILogger FLogger;
+		IPluginHost2 FPluginHost;
 
 		private DataGridView FDataGridView;
 		private FolderBrowserDialog folderBrowserDialog1;
@@ -51,12 +53,16 @@ namespace VVVV.Nodes.Table
 
 		#region constructor and init
 
-		public TableViewNode()
+		[ImportingConstructor]
+		public TableViewNode(IPluginHost2 plugHost2)
 		{
+		    FPluginHost = plugHost2;
+		    
 			//setup the gui
 			InitializeComponent();
 			FDataGridView.CellValueChanged += FDataGridView_CellValueChanged;
 			FDataGridView.RowsRemoved += FDataGridView_RowsRemoved;
+			
 		}
 
 		void FDataGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
@@ -79,6 +85,7 @@ namespace VVVV.Nodes.Table
 
 		void InitializeComponent()
 		{
+		    
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -90,11 +97,29 @@ namespace VVVV.Nodes.Table
 			// 
 			// FDataGridView
 			// 
+			
+						
 			this.FDataGridView.AllowDrop = true;
 			this.FDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.FDataGridView.BackgroundColor = System.Drawing.Color.DimGray;
 			this.FDataGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
 			this.FDataGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+
+			this.FDataGridView.Name = "FDataGridView";
+			this.FDataGridView.Location = new System.Drawing.Point(0, 0);
+			this.FDataGridView.Size = this.Size;
+			this.FDataGridView.Cursor = System.Windows.Forms.Cursors.Default;
+			this.FDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			
+//			this.FDataGridView.RowsDefaultCellStyle = defaultStyle;
+//			this.FDataGridView.AlternatingRowsDefaultCellStyle = defaultAltStyle;
+//			this.FDataGridView.DefaultCellStyle = new DataGridViewCellStyle();
+
+			this.FDataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridView1_CellValidating);
+			this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
+			this.FDataGridView.ColumnAdded += new DataGridViewColumnEventHandler(TableViewNode_ColumnAdded);
+			
+			
 			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
 			dataGridViewCellStyle1.BackColor = System.Drawing.Color.DimGray;
 			dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -145,12 +170,7 @@ namespace VVVV.Nodes.Table
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.FDataGridView);
-			this.Name = "XMLGridViewControl";
 			this.Size = new System.Drawing.Size(563, 231);
-			((System.ComponentModel.ISupportInitialize)(this.FDataGridView)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.StateDataSet)).EndInit();
-			this.ResumeLayout(false);
 			
 			DataGridViewCellStyle defaultStyle = new DataGridViewCellStyle();
 			defaultStyle.SelectionBackColor = System.Drawing.Color.Gray;
@@ -173,37 +193,70 @@ namespace VVVV.Nodes.Table
 			textStyle.Format = string.Empty;
 			textStyle.NullValue = TableDefaults.STRING;
 			textStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+		
 			
-			this.FDataGridView = new System.Windows.Forms.DataGridView();
-			((System.ComponentModel.ISupportInitialize)(this.FDataGridView)).BeginInit();
-			this.SuspendLayout();
-			// 
-			// FDataGridView
-			// 
-			this.FDataGridView.Name = "FDataGridView";
-			this.FDataGridView.Location = new System.Drawing.Point(0, 0);
-			this.FDataGridView.Size = this.Size;
-			this.FDataGridView.Cursor = System.Windows.Forms.Cursors.Default;
-			this.FDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-			this.FDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			
-			this.FDataGridView.RowsDefaultCellStyle = defaultStyle;
-			this.FDataGridView.AlternatingRowsDefaultCellStyle = defaultAltStyle;
-			this.FDataGridView.DefaultCellStyle = new DataGridViewCellStyle();
 
-			this.FDataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.FDataGridView_CellValidating);
-			this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
-			this.FDataGridView.ColumnAdded += new DataGridViewColumnEventHandler(TableViewNode_ColumnAdded);
 			// 
 			// TableViewNode
 			// 
 			this.Controls.Add(this.FDataGridView);
 			this.Name = "TableViewNode";
-			this.Size = new System.Drawing.Size(344, 368);
 			this.Resize += new System.EventHandler(this.TableViewWindow_Resize);
 			((System.ComponentModel.ISupportInitialize)(this.FDataGridView)).EndInit();
 			this.ResumeLayout(false);
 
+		}
+		
+		void DataGridView1CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+			this.Validate();
+			DoAutoSave();
+		}
+		
+		void DataGridView1UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+		{
+			this.Validate();
+			DoAutoSave();
+		}
+		
+		//apply stle for ne column
+		void DataGridView1ColumnAdded(object sender, DataGridViewColumnEventArgs e)
+		{
+			e.Column.MinimumWidth = 60;
+			
+			if(e.Column is DataGridViewCheckBoxColumn)
+			{
+				var col = e.Column as DataGridViewCheckBoxColumn;
+				col.FlatStyle = FlatStyle.Popup; 
+			}
+			else if(e.Column is DataGridViewButtonColumn)
+			{
+				var col = e.Column as DataGridViewButtonColumn;
+				col.FlatStyle = FlatStyle.Flat; 
+			}
+			
+			if(e.Column.Index % 2 == 1)
+			{
+				var gray = 95;
+				var c =  Color.FromArgb(gray, gray, gray);
+				e.Column.DefaultCellStyle.BackColor = c;
+				e.Column.HeaderCell.Style.BackColor = c;
+			}
+		}
+		
+		//parsing error
+		void DataGridView1DataError(object sender, System.Windows.Forms.DataGridViewDataErrorEventArgs e)
+		{
+			if(e.Context.HasFlag(DataGridViewDataErrorContexts.Parsing))
+			{
+				MessageBox.Show("Parsing Error, please enter a cell value with correct formatting");
+				e.Cancel = true;
+			}
+			else
+			{
+				//throw e.Exception;
+				//MessageBox.Show("Data Grid Error: " + e.Exception.Message);
+			}
 		}
 		
 		#region reorder
@@ -257,6 +310,11 @@ namespace VVVV.Nodes.Table
 			}
 		}
 		
+		void DoAutoSave()
+		{
+		    OnDataChanged();
+		}
+		
 		public event EventHandler<DataGridViewCellMouseEventArgs> TriggerButtonClicked;
 		
 		void DataGridView1CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -267,7 +325,7 @@ namespace VVVV.Nodes.Table
 				{
 					var index = e.ColumnIndex - 1;
 					
-					if(index >= 0 && StateDataSet.Tables[0].Columns[index].DataType == typeof(string))
+					if(index >= 0 && FData.Columns[index].DataType == typeof(string))
 					{
 						folderBrowserDialog1.SelectedPath = (string)FDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
 						folderBrowserDialog1.ShowDialog(this);
@@ -332,7 +390,7 @@ namespace VVVV.Nodes.Table
 							CopyToClipboard();
 
 							//Clear selected cells
-							foreach (DataGridViewCell dgvCell in dataGridView1.SelectedCells)
+							foreach (DataGridViewCell dgvCell in FDataGridView.SelectedCells)
 								dgvCell.Value = string.Empty;
 							break;
 							
@@ -348,23 +406,23 @@ namespace VVVV.Nodes.Table
 		private void CopyToClipboard()
 		{
 			//Copy to clipboard
-			DataObject dataObj = dataGridView1.GetClipboardContent();
+			DataObject dataObj = FDataGridView.GetClipboardContent();
 			if (dataObj != null)
 				Clipboard.SetDataObject(dataObj);
 		}
 
 		private void PasteClipboardValue()
 		{
-			dataGridView1.BeginEdit(false);
+			FDataGridView.BeginEdit(false);
 			//Show Error if no cell is selected
-			if (dataGridView1.SelectedCells.Count == 0)
+			if (FDataGridView.SelectedCells.Count == 0)
 			{
 				MessageBox.Show("Please select a cell", "Paste", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return;
 			}
 
 			//Get the satring Cell
-			DataGridViewCell startCell = GetStartCell(dataGridView1);
+			DataGridViewCell startCell = GetStartCell(FDataGridView);
 			//Get the clipboard value in a dictionary
 			Dictionary<int, Dictionary<int, string>> cbValue = ClipBoardValues(Clipboard.GetText());
 
@@ -375,9 +433,9 @@ namespace VVVV.Nodes.Table
 				foreach (int cellKey in cbValue[rowKey].Keys)
 				{
 					//Check if the index is with in the limit
-					if (iColIndex <= dataGridView1.Columns.Count - 1 && iRowIndex <= dataGridView1.Rows.Count - 1)
+					if (iColIndex <= FDataGridView.Columns.Count - 1 && iRowIndex <= FDataGridView.Rows.Count - 1)
 					{
-						DataGridViewCell cell = dataGridView1[iColIndex, iRowIndex];
+						DataGridViewCell cell = FDataGridView[iColIndex, iRowIndex];
 
 						cell.Value = cbValue[rowKey][cellKey];
 					}
@@ -385,7 +443,7 @@ namespace VVVV.Nodes.Table
 				}
 				iRowIndex++;
 			}
-			dataGridView1.EndEdit();
+			FDataGridView.EndEdit();
 		}
 
 		private DataGridViewCell GetStartCell(DataGridView dgView)
@@ -526,6 +584,8 @@ namespace VVVV.Nodes.Table
 						column.SortMode = DataGridViewColumnSortMode.NotSortable;
 					}
 				}
+				
+				FPluginHost.Window.Caption = FData.TableName;
 			}
 
 			if (FData == null)
