@@ -86,9 +86,9 @@ namespace VVVV.Nodes.Table
 		void InitializeComponent()
 		{
 		    
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle headerCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle defaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle rowHeadersDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
 			this.FDataGridView = new System.Windows.Forms.DataGridView();
 			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			((System.ComponentModel.ISupportInitialize)(this.FDataGridView)).BeginInit();
@@ -108,7 +108,6 @@ namespace VVVV.Nodes.Table
 			this.FDataGridView.Name = "FDataGridView";
 			this.FDataGridView.Location = new System.Drawing.Point(0, 0);
 			this.FDataGridView.Size = this.Size;
-			this.FDataGridView.Cursor = System.Windows.Forms.Cursors.Default;
 			this.FDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			
 //			this.FDataGridView.RowsDefaultCellStyle = defaultStyle;
@@ -116,42 +115,40 @@ namespace VVVV.Nodes.Table
 //			this.FDataGridView.DefaultCellStyle = new DataGridViewCellStyle();
 
 			this.FDataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridView1_CellValidating);
-			this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
-			this.FDataGridView.ColumnAdded += new DataGridViewColumnEventHandler(TableViewNode_ColumnAdded);
+			//this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
 			
 			
-			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle1.BackColor = System.Drawing.Color.DimGray;
-			dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-			dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-			dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-			dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-			this.FDataGridView.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			headerCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+			headerCellStyle.BackColor = System.Drawing.Color.DimGray;
+			headerCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			headerCellStyle.ForeColor = System.Drawing.SystemColors.WindowText;
+			headerCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+			headerCellStyle.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+			headerCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+			this.FDataGridView.ColumnHeadersDefaultCellStyle = headerCellStyle;
 			this.FDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 
-			dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle2.BackColor = System.Drawing.Color.DimGray;
-			dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-			dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.Black;
-			dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
-			dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-			this.FDataGridView.DefaultCellStyle = dataGridViewCellStyle2;
+			defaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+			defaultCellStyle.BackColor = System.Drawing.Color.DimGray;
+			defaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			defaultCellStyle.ForeColor = System.Drawing.Color.White;
+			defaultCellStyle.SelectionBackColor = System.Drawing.Color.Black;
+			defaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
+			defaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+			this.FDataGridView.DefaultCellStyle = defaultCellStyle;
 			this.FDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.FDataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
 			this.FDataGridView.Location = new System.Drawing.Point(0, 0);
 			this.FDataGridView.Name = "FDataGridView";
 			this.FDataGridView.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-			dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle3.BackColor = System.Drawing.Color.DimGray;
-			dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-			dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-			dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-			dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-			this.FDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-			this.FDataGridView.Size = new System.Drawing.Size(563, 231);
+			rowHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+			rowHeadersDefaultCellStyle.BackColor = System.Drawing.Color.DimGray;
+			rowHeadersDefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			rowHeadersDefaultCellStyle.ForeColor = System.Drawing.SystemColors.WindowText;
+			rowHeadersDefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+			rowHeadersDefaultCellStyle.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+			rowHeadersDefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+			this.FDataGridView.RowHeadersDefaultCellStyle = rowHeadersDefaultCellStyle;
 			this.FDataGridView.TabIndex = 0;
 			
 			this.FDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridView1CellMouseDown);
@@ -194,14 +191,12 @@ namespace VVVV.Nodes.Table
 			textStyle.NullValue = TableDefaults.STRING;
 			textStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 		
-			
 
 			// 
 			// TableViewNode
 			// 
 			this.Controls.Add(this.FDataGridView);
 			this.Name = "TableViewNode";
-			this.Resize += new System.EventHandler(this.TableViewWindow_Resize);
 			((System.ComponentModel.ISupportInitialize)(this.FDataGridView)).EndInit();
 			this.ResumeLayout(false);
 
@@ -219,7 +214,7 @@ namespace VVVV.Nodes.Table
 			DoAutoSave();
 		}
 		
-		//apply stle for ne column
+		//apply stle for one column
 		void DataGridView1ColumnAdded(object sender, DataGridViewColumnEventArgs e)
 		{
 			e.Column.MinimumWidth = 60;
@@ -242,6 +237,19 @@ namespace VVVV.Nodes.Table
 				e.Column.DefaultCellStyle.BackColor = c;
 				e.Column.HeaderCell.Style.BackColor = c;
 			}
+			
+//			if (e.Column.ValueType != null)
+//			{
+//					switch (e.Column.ValueType.Name)
+//					{
+//						case "String":
+//							e.Column.DefaultCellStyle = (textStyle);
+//							break;
+//						default:
+//							e.Column.DefaultCellStyle = (numberStyle);
+//							break;
+//					}
+//			}
 		}
 		
 		//parsing error
@@ -492,30 +500,6 @@ namespace VVVV.Nodes.Table
 		
 		#endregion copy/paste
 		
-		#region Layout Stuff
-		void TableViewNode_ColumnAdded(object sender, DataGridViewColumnEventArgs e)
-		{
-			if (e.Column.ValueType != null)
-			{
-					switch (e.Column.ValueType.Name)
-					{
-						case "String":
-							e.Column.DefaultCellStyle = (textStyle);
-							break;
-						default:
-							e.Column.DefaultCellStyle = (numberStyle);
-							break;
-					}
-			}
-		}
-
-		
-		
-		private void TableViewWindow_Resize(object sender, EventArgs e)
-		{
-			this.FDataGridView.Size = this.Size;
-		}
-		#endregion Layout Stuff
 		
 		private void dataGridView1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
 		{
