@@ -12,11 +12,13 @@ namespace VVVV.Nodes.Table
 	public class RemoveRowNode : TablePluginEvaluate
 	{
 		#region fields & pins
-		[Input("Remove", IsBang = true)]
-		IDiffSpread<bool> FRemove;
-
+		#pragma warning disable 169, 649
 		[Input("Index")]
 		ISpread<int> FIndex;
+		
+		[Input("Remove", IsBang = true)]
+		IDiffSpread<bool> FRemove;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)

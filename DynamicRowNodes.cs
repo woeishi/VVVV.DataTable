@@ -12,6 +12,7 @@ namespace VVVV.Nodes.Table
 	public abstract class TableRowDynamicPluginEvaluate : IPluginEvaluate, IPartImportsSatisfiedNotification
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Config("Name")]
 		IDiffSpread<string> FName;
 		
@@ -36,6 +37,7 @@ namespace VVVV.Nodes.Table
 		private bool ColChanged = false;
 		
 		private Dictionary<string,IIOContainer> FPins = new Dictionary<string, IIOContainer>();
+		#pragma warning restore
 		#endregion
 		
 		public void OnImportsSatisfied()
@@ -165,6 +167,7 @@ namespace VVVV.Nodes.Table
 	public class GetRowDynamicNode : TableRowDynamicPluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Index")]
 		IDiffSpread<int> FIndex;
 		
@@ -173,6 +176,7 @@ namespace VVVV.Nodes.Table
 		
 		[Import()]
 		ILogger FLogger;
+		#pragma warning restore
 		#endregion
 		
 		protected override IOAttribute CreatePinAttribute(string name)
@@ -223,6 +227,7 @@ namespace VVVV.Nodes.Table
 	public class SetRowDynamicNode : TableRowDynamicPluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Index", Order = int.MaxValue-1)]
 		ISpread<int> FIndex;
 		
@@ -234,6 +239,7 @@ namespace VVVV.Nodes.Table
 		
 		[Import()]
 		ILogger FLogger;
+		#pragma warning restore
 		#endregion
 		
 		protected override IOAttribute CreatePinAttribute(string name)
@@ -272,6 +278,7 @@ namespace VVVV.Nodes.Table
 	public class InsertRowDynamicNode : TableRowDynamicPluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Index", Order = int.MaxValue-1)]
 		ISpread<int> FIndex;
 		
@@ -283,6 +290,7 @@ namespace VVVV.Nodes.Table
 		
 		[Import()]
 		ILogger FLogger;
+		#pragma warning restore
 		#endregion
 		
 		protected override IOAttribute CreatePinAttribute(string name)

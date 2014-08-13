@@ -9,6 +9,7 @@ namespace VVVV.Nodes.Table
 	public class InsertRowNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Input")]
 		ISpread<ISpread<T>> FInput;
 		
@@ -17,6 +18,7 @@ namespace VVVV.Nodes.Table
 		
 		[Input("Insert", IsBang = true)]
 		IDiffSpread<bool> FInsert;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
@@ -39,7 +41,7 @@ namespace VVVV.Nodes.Table
 	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Insert rows of values into tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class InsertRowValueNode : InsertRowNode<double> {}
 	
-	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "String", Help = "Insert rows of strings into tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "InsertRow", Category = TableDefaults.CATEGORY, Version = "String", Help = "Insert rows of strings into tables", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class InsertRowStringNode : InsertRowNode<string> {}
 	#endregion InsertRowNodes
 }

@@ -22,6 +22,7 @@ namespace VVVV.Nodes.Table
 	public class CreateTableNode : IPluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Commands", IsSingle = true)]
 		ISpread<TableCommands> FInCmds;
 		
@@ -42,6 +43,7 @@ namespace VVVV.Nodes.Table
 		
 		[Output("Commands")]
 		ISpread<TableCommands> FOutCmds;
+		#pragma warning restore
 		#endregion
 		
 		public void Evaluate(int spreadMax)
@@ -91,6 +93,7 @@ namespace VVVV.Nodes.Table
 	public class DeleteTableNode : IPluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Commands", IsSingle = true)]
 		ISpread<TableCommands> FInCmds;
 		
@@ -102,6 +105,7 @@ namespace VVVV.Nodes.Table
 		
 		[Output("Commands")]
 		ISpread<TableCommands> FOutCmds;
+		#pragma warning restore
 		#endregion
 		
 		public void Evaluate(int spreadMax)
