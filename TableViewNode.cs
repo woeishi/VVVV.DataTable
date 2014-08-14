@@ -115,7 +115,7 @@ namespace VVVV.Nodes.Table
 //			this.FDataGridView.DefaultCellStyle = new DataGridViewCellStyle();
 
 			this.FDataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridView1_CellValidating);
-			//this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
+			this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
 			
 			
 			headerCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -331,7 +331,7 @@ namespace VVVV.Nodes.Table
 			{
 				if(e.Button == MouseButtons.Right)
 				{
-					var index = e.ColumnIndex - 1;
+					var index = e.ColumnIndex;
 					
 					if(index >= 0 && FData.Columns[index].DataType == typeof(string))
 					{
