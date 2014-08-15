@@ -125,6 +125,11 @@ namespace VVVV.Nodes.Table
 				case "integer":
 					type = typeof(int);
 					break;
+				case "b":
+				case "bool":
+				case "boolean":
+					type = typeof(bool);
+					break;
 				default:
 					try
 					{
