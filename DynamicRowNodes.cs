@@ -139,7 +139,10 @@ namespace VVVV.Nodes.Table
 				{
 					if(!pins.ContainsKey(FName[i]+FType[i]))
 					{
-						Type pinType = typeof(ISpread<>).MakeGenericType(Type.GetType(FType[i],true,true));
+						Type dataType = Type.GetType(FType[i],true,true);
+						if (dataType == typeof(System.Int64))
+							dataType = typeof(int);
+						Type pinType = typeof(ISpread<>).MakeGenericType(dataType);
 						IIOContainer container = FIOFactory.CreateIOContainer(pinType,CreatePinAttribute(FName[i]));
 						FPins.Add(FName[i]+FType[i], container);
 					}
