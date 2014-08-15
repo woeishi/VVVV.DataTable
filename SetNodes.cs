@@ -9,6 +9,7 @@ namespace VVVV.Nodes.Table
 	public class SetRowNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Input")]
 		ISpread<ISpread<T>> FInput;
 
@@ -17,6 +18,7 @@ namespace VVVV.Nodes.Table
 
 		[Input("Set", IsBang = true)]
 		IDiffSpread<bool> FSet;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
@@ -39,7 +41,7 @@ namespace VVVV.Nodes.Table
 	[PluginInfo(Name = "SetRow", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Row-wise sets values in tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class SetRowValueNode : SetRowNode<double> {}
 	
-	[PluginInfo(Name = "SetRow", Category = TableDefaults.CATEGORY, Version = "String", Help = "Row-wise sets strings in tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR, AutoEvaluate = true)]
+	[PluginInfo(Name = "SetRow", Category = TableDefaults.CATEGORY, Version = "String", Help = "Row-wise sets strings in tables", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR, AutoEvaluate = true)]
 	public class SetRowStringNode : SetRowNode<string> {}
 	#endregion SetRowNodes
 	
@@ -47,6 +49,7 @@ namespace VVVV.Nodes.Table
 	public class SetColumnNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Input")]
 		ISpread<ISpread<T>> FInput;
 
@@ -55,6 +58,7 @@ namespace VVVV.Nodes.Table
 
 		[Input("Set", IsBang = true)]
 		IDiffSpread<bool> FSet;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
@@ -85,6 +89,7 @@ namespace VVVV.Nodes.Table
 	public class SetCellNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Input")]
 		ISpread<T> FInput;
 
@@ -96,6 +101,7 @@ namespace VVVV.Nodes.Table
 
 		[Input("Set", IsBang = true)]
 		IDiffSpread<bool> FSet;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)

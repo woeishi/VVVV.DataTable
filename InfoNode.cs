@@ -6,11 +6,12 @@ using VVVV.PluginInterfaces.V2;
 namespace VVVV.Nodes.Table
 {
 	#region PluginInfo
-	[PluginInfo(Name = "Info", Category = TableDefaults.CATEGORY, Help = "retrieves information about the structure of a table", Tags = TableDefaults.TAGS, Author = TableDefaults.TAGS, AutoEvaluate = true)]
+	[PluginInfo(Name = "Info", Category = TableDefaults.CATEGORY, Help = "retrieves information about the structure of a table", Tags = TableDefaults.TAGS, Author = TableDefaults.TAGS)]
 	#endregion PluginInfo
 	public class TableInfoNode : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Output("Table Name")]
 		ISpread<string> FName;
 
@@ -22,6 +23,7 @@ namespace VVVV.Nodes.Table
 		
 		[Output("Row Count")]
 		ISpread<int> FRowCount;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)

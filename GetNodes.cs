@@ -11,6 +11,7 @@ namespace VVVV.Nodes.Table
 	public class DumpNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Output("Output")]
 		ISpread<T> FOutput;
 		
@@ -19,9 +20,7 @@ namespace VVVV.Nodes.Table
 
 		[Output("Row Count")]
 		ISpread<int> FRowCount;
-		
-		[Import()]
-		ILogger FLogger;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
@@ -53,7 +52,7 @@ namespace VVVV.Nodes.Table
 	[PluginInfo(Name = "Dump", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of all tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
 	public class DumpValueNode : DumpNode<double> {}
 	
-	[PluginInfo(Name = "Dump", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of all tables", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
+	[PluginInfo(Name = "Dump", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of all tables", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
 	public class DumpStringNode : DumpNode<string> {}
 	#endregion DumpNodes
 	
@@ -61,6 +60,7 @@ namespace VVVV.Nodes.Table
 	public class GetTableNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Index")]
 		IDiffSpread<int> FIndex;
 		
@@ -72,6 +72,7 @@ namespace VVVV.Nodes.Table
 
 		[Output("Row Count")]
 		ISpread<int> FRowCount;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
@@ -100,10 +101,10 @@ namespace VVVV.Nodes.Table
 		}
 	}
 	
-	[PluginInfo(Name = "GetTable", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of an entire table", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
+	[PluginInfo(Name = "GetTable", Category = TableDefaults.CATEGORY, Version = "Value", Help = "Gets values of an entire table", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
 	public class GetTableValueNode : GetTableNode<double> {}
 	
-	[PluginInfo(Name = "GetTable", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of an entire table", Tags = TableDefaults.TAGS, Author = "elliotwoods, "+TableDefaults.AUTHOR)]
+	[PluginInfo(Name = "GetTable", Category = TableDefaults.CATEGORY, Version = "String", Help = "Gets strings of an entire table", Tags = TableDefaults.TAGS, Author = TableDefaults.AUTHOR)]
 	public class GetTableStringNode : GetTableNode<string> {}
 	#endregion GetTableNodes
 	
@@ -111,14 +112,13 @@ namespace VVVV.Nodes.Table
 	public class GetRowNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Index")]
 		IDiffSpread<int> FIndex;
 		
 		[Output("Output")]
 		ISpread<ISpread<T>> FOutput;
-		
-		[Import()]
-		ILogger FLogger;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
@@ -149,14 +149,13 @@ namespace VVVV.Nodes.Table
 	public class GetColumnNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Index")]
 		IDiffSpread<int> FIndex;
 		
 		[Output("Output")]
 		ISpread<ISpread<T>> FOutput;
-		
-		[Import()]
-		ILogger FLogger;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
@@ -187,6 +186,7 @@ namespace VVVV.Nodes.Table
 	public class GetCellNode<T> : TablePluginEvaluate
 	{
 		#region fields & pins
+		#pragma warning disable 169, 649
 		[Input("Row Index", BinVisibility = PinVisibility.OnlyInspector, BinSize = 1)]
 		IDiffSpread<ISpread<int>> FRowId;
 		
@@ -195,9 +195,7 @@ namespace VVVV.Nodes.Table
 		
 		[Output("Output", BinVisibility = PinVisibility.OnlyInspector)]
 		ISpread<ISpread<T>> FOutput;
-		
-		[Import()]
-		ILogger FLogger;
+		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
