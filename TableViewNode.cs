@@ -34,6 +34,9 @@ namespace VVVV.Nodes.Table
 
         [Input("Down", IsSingle = true, IsBang = true)]
         ISpread<bool> FDown;
+        
+        [Input("Edit On Enter", IsSingle = true)]
+        IDiffSpread<bool> FEditOnEnter;
 
         [Output("Selected Row")]
         ISpread<int> FCurrentIndex;
@@ -43,12 +46,10 @@ namespace VVVV.Nodes.Table
         IPluginHost2 FPluginHost;
 
         private DataGridView FDataGridView;
-        private FolderBrowserDialog folderBrowserDialog1;
+        private FolderBrowserDialog FFolderBrowserDialog;
         private Table FData;
         private bool FNeedsUpdate = false;
         
-        internal DataGridViewCellStyle numberStyle;
-        internal DataGridViewCellStyle textStyle;
         #endregion fields & pins
 
         #region constructor and init
@@ -86,7 +87,7 @@ namespace VVVV.Nodes.Table
             System.Windows.Forms.DataGridViewCellStyle rowHeadersDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
             
             this.FDataGridView = new System.Windows.Forms.DataGridView();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.FFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             
             ((System.ComponentModel.ISupportInitialize)(this.FDataGridView)).BeginInit();
             this.SuspendLayout();
@@ -107,9 +108,6 @@ namespace VVVV.Nodes.Table
             this.FDataGridView.Size = this.Size;
             this.FDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             
-//			this.FDataGridView.RowsDefaultCellStyle = defaultStyle;
-//			this.FDataGridView.AlternatingRowsDefaultCellStyle = defaultAltStyle;
-//			this.FDataGridView.DefaultCellStyle = new DataGridViewCellStyle();
 
             headerCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             headerCellStyle.BackColor = System.Drawing.Color.DimGray;
@@ -156,7 +154,7 @@ namespace VVVV.Nodes.Table
             this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
             this.FDataGridView.CellMouseDoubleClick += HandleCellMouseDoubleClick;
             this.FDataGridView.CurrentCellDirtyStateChanged += HandleCurrentCellDirtyStateChanged;
-
+            
             // 
             // XMLGridViewControl
             // 
@@ -196,7 +194,7 @@ namespace VVVV.Nodes.Table
             this.Validate();
             OnDataChanged();
         }
-        
+		
         //apply stle for one column
         void FDataGridView_ColumnAdded(object sender, DataGridViewColumnEventArgs e)
         {
@@ -260,14 +258,18 @@ namespace VVVV.Nodes.Table
             // If the drag operation was a move then remove and insert the row.
             if (e.Effect== DragDropEffects.Move)
             {
-                var foo = FDataGridView.DataSource as DataSet;
                 int idx = FDataGridView.SelectedRows[0].Index;
-                var value = foo.Tables[0].Rows[idx];
+                var value = FData.Rows[idx];
                 //clone
-                var newRow = foo.Tables[0].NewRow();
+                var newRow = FData.NewRow();
                 newRow.ItemArray = value.ItemArray;
-                foo.Tables[0].Rows.Remove(value);
-                foo.Tables[0].Rows.InsertAt(newRow, FRowIndexOfItemUnderMouseToDrop);
+                
+                if(FRowIndexOfItemUnderMouseToDrop < 0)
+                    FRowIndexOfItemUnderMouseToDrop = FData.Rows.Count - 1;
+                 
+                FData.Rows.Remove(value);                
+                FData.Rows.InsertAt(newRow, FRowIndexOfItemUnderMouseToDrop);
+                
                 OnDataChanged();
             }
         }
@@ -282,9 +284,9 @@ namespace VVVV.Nodes.Table
                     
                     if(index >= 0 && FData.Columns[index].DataType == typeof(string))
                     {
-                        folderBrowserDialog1.SelectedPath = (string)FDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-                        folderBrowserDialog1.ShowDialog(this);
-                        FDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = folderBrowserDialog1.SelectedPath;
+                        FFolderBrowserDialog.SelectedPath = (string)FDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                        FFolderBrowserDialog.ShowDialog(this);
+                        FDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = FFolderBrowserDialog.SelectedPath;
                         return; // done
                     }
                     if(index >= 0 && FData.Columns[index].DataType == typeof(bool))
@@ -465,7 +467,7 @@ namespace VVVV.Nodes.Table
         //commit change for checkboxes
         void HandleCurrentCellDirtyStateChanged(object sender, System.EventArgs e)
         {
-            if (FDataGridView.IsCurrentCellDirty)
+            if (FDataGridView.IsCurrentCellDirty && FDataGridView.CurrentCell is DataGridViewCheckBoxCell)
             {
                 FDataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
@@ -556,6 +558,9 @@ namespace VVVV.Nodes.Table
             
             if (FAllowAddRow.IsChanged)
                 FDataGridView.AllowUserToAddRows = FAllowAddRow[0];
+            
+            if(FEditOnEnter.IsChanged)
+                FDataGridView.EditMode = FEditOnEnter[0] ? DataGridViewEditMode.EditOnEnter : DataGridViewEditMode.EditOnKeystrokeOrF2;
 
             if (FData.Rows.Count > 0)
             {
