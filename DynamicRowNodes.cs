@@ -197,7 +197,7 @@ namespace VVVV.Nodes.Table
 				if (table != null && table.Columns.Count > 0)
 				{
 					foreach (var p in pins.Values)
-            			(p.RawIOObject as ISpread).SliceCount = table.Rows.Count;
+            			(p.RawIOObject as ISpread).SliceCount = Math.Min(FIndex.SliceCount,table.Rows.Count);
 					for (int i=0; i<FIndex.SliceCount; i++)
 					{
 						if (table.Rows.Count > 0)
