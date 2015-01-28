@@ -68,7 +68,7 @@ namespace VVVV.Nodes.Table
 			if (table.Rows.Count > 0)
 			{
 				rowIndex = VVVV.Utils.VMath.VMath.Zmod(rowIndex, table.Rows.Count);
-				columnIndex = VVVV.Utils.VMath.VMath.Zmod(rowIndex, table.Columns.Count);
+				columnIndex = VVVV.Utils.VMath.VMath.Zmod(columnIndex, table.Columns.Count);
 				return (T)table.Rows[rowIndex][columnIndex];
 			}
 			else
