@@ -148,7 +148,7 @@ namespace VVVV.Nodes.Table
             this.FDataGridView.MouseMove += new System.Windows.Forms.MouseEventHandler(FDataGridView_MouseMove);
             this.FDataGridView.CellMouseDoubleClick += HandleCellMouseDoubleClick;
             this.FDataGridView.CurrentCellDirtyStateChanged += HandleCurrentCellDirtyStateChanged;
-            
+            this.FDataGridView.CellParsing += FDataGridView_CellParsing;
             // 
             // TableViewNode
             // 
@@ -178,6 +178,7 @@ namespace VVVV.Nodes.Table
         void FDataGridView_ColumnAdded(object sender, DataGridViewColumnEventArgs e)
         {
             e.Column.MinimumWidth = 60;
+            e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;
             
             if(e.Column is DataGridViewCheckBoxColumn)
             {
@@ -188,6 +189,21 @@ namespace VVVV.Nodes.Table
             {
                 var col = e.Column as DataGridViewButtonColumn;
                 col.FlatStyle = FlatStyle.Flat;
+            }
+            else
+            {
+            	if (e.Column.ValueType != null &&
+            	    (e.Column.ValueType == typeof(double) || 
+            	     e.Column.ValueType == typeof(float)))
+            	{
+                    var nf = new System.Globalization.NumberFormatInfo();
+                    nf = (System.Globalization.NumberFormatInfo)FData.Locale.NumberFormat.Clone();
+                    nf.NumberGroupSeparator = "";
+                    
+                    e.Column.DefaultCellStyle.FormatProvider = nf;
+                	e.Column.DefaultCellStyle.Format = "N4";
+            	}
+            		
             }
           
             if(e.Column.Index % 2 == 1)
@@ -366,8 +382,10 @@ namespace VVVV.Nodes.Table
                     if (iColIndex <= FDataGridView.Columns.Count - 1 && iRowIndex <= FDataGridView.Rows.Count - 1)
                     {
                         DataGridViewCell cell = FDataGridView[iColIndex, iRowIndex];
-
-                        cell.Value = cbValue[rowKey][cellKey];
+                        if (cell.ValueType == typeof(double) || cell.ValueType == typeof(float))
+                        	cell.Value = ParseDecimal(cbValue[rowKey][cellKey]);
+                        else
+                        	cell.Value = cbValue[rowKey][cellKey];
                     }
                     iColIndex++;
                 }
@@ -425,15 +443,50 @@ namespace VVVV.Nodes.Table
         
         private void FDataGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            try
-            {
-                System.Convert.ChangeType(e.FormattedValue,this.FDataGridView.Columns[e.ColumnIndex].ValueType);
-            }
-            catch
-            {
-                e.Cancel = true;
-            }
+        	if (FDataGridView.Columns[e.ColumnIndex].ValueType == typeof(double) ||
+            	FDataGridView.Columns[e.ColumnIndex].ValueType == typeof(float))
+        	{
+        		double res = 0;
+        		if (!double.TryParse(e.FormattedValue.ToString(), System.Globalization.NumberStyles.Any, FData.Locale.NumberFormat, out res))
+        			e.Cancel = true;
+        	}
+        	else
+        	{
+	            try
+	            {
+                	System.Convert.ChangeType(e.FormattedValue,this.FDataGridView.Columns[e.ColumnIndex].ValueType);
+	            }
+	            catch
+	            {
+	                e.Cancel = true;
+	            }
+        	}
         }
+        
+        //handle use of arbitrary decimal separator
+        object ParseDecimal(object value)
+        {
+        	char decimalSeparator = FData.Locale.NumberFormat.NumberDecimalSeparator[0];
+        	char groupSeparator = decimalSeparator=='.'?',':'.';
+        		
+    		if (value.ToString().Contains(groupSeparator.ToString())
+    		    && (!value.ToString().Contains(decimalSeparator.ToString())))
+    		{
+        		value = value.ToString().Replace(groupSeparator,decimalSeparator);
+    		}
+        	return double.Parse(value.ToString(),FData.Locale.NumberFormat);
+        }
+        
+        
+        void FDataGridView_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
+		{
+			if (FDataGridView.Columns[e.ColumnIndex].ValueType == typeof(double) ||
+            	FDataGridView.Columns[e.ColumnIndex].ValueType == typeof(float))
+			{
+        		e.Value = ParseDecimal(e.Value);
+        		e.ParsingApplied = true;
+			}
+		}
 
         //begin edit on double click
         void HandleCellMouseDoubleClick(object sender, System.Windows.Forms.DataGridViewCellMouseEventArgs e)
@@ -521,13 +574,8 @@ namespace VVVV.Nodes.Table
                 {
                     FDataGridView.TopLeftHeaderCell.Value = FData.TableName;
                     FDataGridView.AllowUserToAddRows = FAllowAddRow[0];
-                    foreach(DataGridViewColumn column in FDataGridView.Columns)
-                    {
-                        column.SortMode = DataGridViewColumnSortMode.NotSortable;
-                    }
+                    FPluginHost.Window.Caption = FData.TableName;
                 }
-                
-                FPluginHost.Window.Caption = FData.TableName;
             }
 
             if (FData == null)
