@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Globalization;
 
 using System.ComponentModel.Composition;
 using VVVV.PluginInterfaces.V2;
@@ -69,6 +70,7 @@ namespace VVVV.Nodes.Table
 							else
 							{
 								Table t = new Table();
+								t.Locale = System.Globalization.CultureInfo.InvariantCulture;
 								t.TableName = FTableName[i];
 								
 								tables.Insert(index,t);
