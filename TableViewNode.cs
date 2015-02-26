@@ -50,10 +50,12 @@ namespace VVVV.Nodes.Table
         private Table FData;
         private bool FNeedsUpdate = false;
         
+        DataGridViewCellStyle defaultCellStyle;
+        DataGridViewCellStyle altColumnStyle;
+        DataGridViewCellStyle headerCellStyle;
         #endregion fields & pins
 
         #region constructor and init
-
         [ImportingConstructor]
         public TableViewNode(IPluginHost2 plugHost2)
         {
@@ -81,10 +83,28 @@ namespace VVVV.Nodes.Table
 
         void InitializeComponent()
         {
+            #region CellStyles
+            defaultCellStyle = new DataGridViewCellStyle();
+            defaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            defaultCellStyle.BackColor = System.Drawing.Color.DimGray;
+            defaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            defaultCellStyle.NullValue = "+";
             
-            System.Windows.Forms.DataGridViewCellStyle headerCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle defaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle rowHeadersDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+            defaultCellStyle.ForeColor = System.Drawing.Color.White;
+            defaultCellStyle.SelectionBackColor = System.Drawing.Color.Black;
+            defaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
+            defaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            
+            altColumnStyle = new DataGridViewCellStyle(defaultCellStyle);
+            var gray =  Color.FromArgb(95, 95, 95);
+            altColumnStyle.BackColor = gray;
+            
+            headerCellStyle = new DataGridViewCellStyle(defaultCellStyle);
+            headerCellStyle.ForeColor = System.Drawing.SystemColors.WindowText;
+            headerCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            headerCellStyle.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            headerCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            #endregion CellStyles
             
             this.FDataGridView = new System.Windows.Forms.DataGridView();
             this.FFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -95,8 +115,6 @@ namespace VVVV.Nodes.Table
             // 
             // FDataGridView
             // 
-            
-            
             this.FDataGridView.AllowDrop = true;
             this.FDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.FDataGridView.BackgroundColor = System.Drawing.Color.DimGray;
@@ -106,40 +124,16 @@ namespace VVVV.Nodes.Table
             this.FDataGridView.Name = "FDataGridView";
             this.FDataGridView.Location = new System.Drawing.Point(0, 0);
             this.FDataGridView.Size = this.Size;
-            this.FDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            
-
-            headerCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            headerCellStyle.BackColor = System.Drawing.Color.DimGray;
-            headerCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            headerCellStyle.ForeColor = System.Drawing.SystemColors.WindowText;
-            headerCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            headerCellStyle.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            headerCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.FDataGridView.ColumnHeadersDefaultCellStyle = headerCellStyle;
             this.FDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-
-            defaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            defaultCellStyle.BackColor = System.Drawing.Color.DimGray;
-            defaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            defaultCellStyle.ForeColor = System.Drawing.Color.White;
-            defaultCellStyle.SelectionBackColor = System.Drawing.Color.Black;
-            defaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
-            defaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+           
             this.FDataGridView.DefaultCellStyle = defaultCellStyle;
             this.FDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FDataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystrokeOrF2;
             this.FDataGridView.Location = new System.Drawing.Point(0, 0);
             this.FDataGridView.Name = "FDataGridView";
             this.FDataGridView.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            rowHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            rowHeadersDefaultCellStyle.BackColor = System.Drawing.Color.DimGray;
-            rowHeadersDefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            rowHeadersDefaultCellStyle.ForeColor = System.Drawing.SystemColors.WindowText;
-            rowHeadersDefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            rowHeadersDefaultCellStyle.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            rowHeadersDefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FDataGridView.RowHeadersDefaultCellStyle = rowHeadersDefaultCellStyle;
+            this.FDataGridView.RowHeadersDefaultCellStyle = headerCellStyle;
             this.FDataGridView.TabIndex = 0;
             
             this.FDataGridView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.FDataGridView_CellMouseDown);
@@ -156,26 +150,11 @@ namespace VVVV.Nodes.Table
             this.FDataGridView.CurrentCellDirtyStateChanged += HandleCurrentCellDirtyStateChanged;
             
             // 
-            // XMLGridViewControl
+            // TableViewNode
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Size = new System.Drawing.Size(563, 231);
-            
-            DataGridViewCellStyle defaultStyle = new DataGridViewCellStyle();
-            defaultStyle.SelectionBackColor = System.Drawing.Color.Gray;
-            defaultStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            defaultStyle.Format = string.Empty;
-            defaultStyle.NullValue = "+";
-            
-            DataGridViewCellStyle defaultAltStyle = new DataGridViewCellStyle(defaultStyle);
-            defaultAltStyle.BackColor = System.Drawing.Color.FromArgb(224,224,224);
-            defaultAltStyle.SelectionBackColor = System.Drawing.Color.Gray;
-            
-
-            // 
-            // TableViewNode
-            // 
             this.Controls.Add(this.FDataGridView);
             this.Name = "TableViewNode";
             ((System.ComponentModel.ISupportInitialize)(this.FDataGridView)).EndInit();
@@ -194,7 +173,7 @@ namespace VVVV.Nodes.Table
             this.Validate();
             OnDataChanged();
         }
-		
+
         //apply stle for one column
         void FDataGridView_ColumnAdded(object sender, DataGridViewColumnEventArgs e)
         {
@@ -210,13 +189,11 @@ namespace VVVV.Nodes.Table
                 var col = e.Column as DataGridViewButtonColumn;
                 col.FlatStyle = FlatStyle.Flat;
             }
-            
+          
             if(e.Column.Index % 2 == 1)
             {
-                var gray = 95;
-                var c =  Color.FromArgb(gray, gray, gray);
-                e.Column.DefaultCellStyle.BackColor = c;
-                e.Column.HeaderCell.Style.BackColor = c;
+            	e.Column.DefaultCellStyle.BackColor = altColumnStyle.BackColor;
+            	e.Column.HeaderCell.Style.BackColor = altColumnStyle.BackColor;
             }
         }
         
