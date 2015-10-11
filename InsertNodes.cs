@@ -16,23 +16,20 @@ namespace VVVV.Nodes.Table
 		[Input("Index")]
 		ISpread<int> FIndex;
 		
-		[Input("Insert", IsBang = true)]
-		IDiffSpread<bool> FInsert;
+		[Input("Insert")]
+		ISpread<bool> FInsert;
 		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
 		{
-			if (FInsert.IsChanged)
+			var spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FInsert).CombineWith(FIndex);
+			for (int i = 0; i < spreadMax; i++)
 			{
-				var spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FInsert).CombineWith(FIndex);
-				for (int i = 0; i < spreadMax; i++)
+				if (FInsert[i])
 				{
-					if (FInsert[i])
-					{
-						tables[i].InsertRow(FInput[i], FIndex[i]);
-						tables[i].OnDataChange(this);
-					}
+					tables[i].InsertRow(FInput[i], FIndex[i]);
+					tables[i].OnDataChange(this);
 				}
 			}
 		}

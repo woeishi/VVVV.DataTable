@@ -285,8 +285,8 @@ namespace VVVV.Nodes.Table
 		[Input("Index", Order = int.MaxValue-1)]
 		ISpread<int> FIndex;
 		
-		[Input("Insert", IsBang = true, Order = int.MaxValue)]
-		IDiffSpread<bool> FInsert;
+		[Input("Insert", Order = int.MaxValue)]
+		ISpread<bool> FInsert;
 		
 		[Output("Status", Order = int.MaxValue)]
 		ISpread<string> FStatus;
@@ -303,7 +303,7 @@ namespace VVVV.Nodes.Table
 		
 		protected override void EvaluateTable(Table table, Dictionary<string,IIOContainer> pins, bool isChanged)
 		{
-			if (table != null && table.Columns.Count > 0 && FInsert.IsChanged)
+			if (table != null && table.Columns.Count > 0)
 			{
 				int spreadMax = FIndex.SliceCount.CombineWith(FInsert);
 				foreach (var p in pins.Values)
