@@ -16,23 +16,20 @@ namespace VVVV.Nodes.Table
 		[Input("Index")]
 		ISpread<int> FIndex;
 
-		[Input("Set", IsBang = true)]
-		IDiffSpread<bool> FSet;
+		[Input("Set")]
+		ISpread<bool> FSet;
 		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
 		{
-			if (FSet.IsChanged)
+			var spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FIndex).CombineWith(FSet);
+			for (int i = 0; i < spreadMax; i++)
 			{
-				var spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FIndex).CombineWith(FSet);
-				for (int i = 0; i < spreadMax; i++)
+				if (FSet[i])
 				{
-					if (FSet[i])
-					{
-						tables[i].SetRow(FInput[i], FIndex[i]);
-						tables[i].OnDataChange(this);
-					}
+					tables[i].SetRow(FInput[i], FIndex[i]);
+					tables[i].OnDataChange(this);
 				}
 			}
 		}
@@ -56,23 +53,20 @@ namespace VVVV.Nodes.Table
 		[Input("Index")]
 		ISpread<int> FIndex;
 
-		[Input("Set", IsBang = true)]
-		IDiffSpread<bool> FSet;
+		[Input("Set")]
+		ISpread<bool> FSet;
 		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
 		{
-			if (FSet.IsChanged)
+			int spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FIndex).CombineWith(FSet);
+			for (int i = 0; i < spreadMax; i++)
 			{
-				int spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FIndex).CombineWith(FSet);
-				for (int i = 0; i < spreadMax; i++)
+				if (FSet[i])
 				{
-					if (FSet[i])
-					{
-						tables[i].SetColumn(FInput[i], FIndex[i]);
-						tables[i].OnDataChange(this);
-					}
+					tables[i].SetColumn(FInput[i], FIndex[i]);
+					tables[i].OnDataChange(this);
 				}
 			}
 		}
@@ -99,23 +93,20 @@ namespace VVVV.Nodes.Table
 		[Input("Column Index")]
 		ISpread<int> FColId;
 
-		[Input("Set", IsBang = true)]
-		IDiffSpread<bool> FSet;
+		[Input("Set")]
+		ISpread<bool> FSet;
 		#pragma warning restore
 		#endregion
 
 		protected override void EvaluateTables(Spread<Table> tables, bool isChanged)
 		{
-			if (FSet.IsChanged)
+			int spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FRowId).CombineWith(FColId).CombineWith(FSet);
+			for (int i = 0; i < spreadMax; i++)
 			{
-				int spreadMax = tables.SliceCount.CombineWith(FInput).CombineWith(FRowId).CombineWith(FColId).CombineWith(FSet);
-				for (int i = 0; i < spreadMax; i++)
+				if (FSet[i])
 				{
-					if (FSet[i])
-					{
-						tables[i].Set(FInput[i], FRowId[i], FColId[i]);
-						tables[i].OnDataChange(this);
-					}
+					tables[i].Set(FInput[i], FRowId[i], FColId[i]);
+					tables[i].OnDataChange(this);
 				}
 			}
 		}
