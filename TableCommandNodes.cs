@@ -56,26 +56,27 @@ namespace VVVV.Nodes.Table
 				{
 					if (FInsert[i])
 					{
-						Func<ISpread<Table>,Table.DataChangedHandler,int> create = delegate(ISpread<Table> tables,Table.DataChangedHandler eventHandler)
+                        var id = i;
+						Func<ISpread<Table>,Table.DataChangedHandler,int> create = (tables,eventHandler) =>
 						{
-							int index = VVVV.Utils.VMath.VMath.Zmod(FIndex[i],tables.SliceCount+1);
+							int index = VVVV.Utils.VMath.VMath.Zmod(FIndex[id],tables.SliceCount+1);
 							int duplicate = -1;
 							for (int d=0; d<tables.SliceCount; d++)
-								if (tables[d].TableName == FTableName[i])
+								if (tables[d].TableName == FTableName[id])
 									duplicate = d;
 							if (duplicate > -1)
 							{
-								throw new DuplicateNameException(FTableName[i]+" already exists|"+duplicate.ToString());
+								throw new DuplicateNameException(FTableName[id]+" already exists|"+duplicate.ToString());
 							}
 							else
 							{
 								Table t = new Table();
-								t.Locale = System.Globalization.CultureInfo.InvariantCulture;
-								t.TableName = FTableName[i];
+								t.Locale = CultureInfo.InvariantCulture;
+								t.TableName = FTableName[id];
 								
 								tables.Insert(index,t);
 								
-								t.SetupColumns(FColumnNames[i],FColumnTypes[i]);
+								t.SetupColumns(FColumnNames[id],FColumnTypes[id]);
 								t.DataChanged += eventHandler;
 							}
 							return index;
@@ -119,9 +120,10 @@ namespace VVVV.Nodes.Table
 				{
 					if (FDelete[i])
 					{
-						Func<ISpread<Table>,Table.DataChangedHandler,int> create = delegate(ISpread<Table> tables,Table.DataChangedHandler eventHandler)
+                        var id = i;
+						Func<ISpread<Table>,Table.DataChangedHandler,int> create = (tables, eventHandler) =>
 						{
-							int index = VVVV.Utils.VMath.VMath.Zmod(FIndex[i],tables.SliceCount);
+							int index = VVVV.Utils.VMath.VMath.Zmod(FIndex[id],tables.SliceCount);
 							tables[index].Dispose();
 							tables.RemoveAt(index);
 							return index;
